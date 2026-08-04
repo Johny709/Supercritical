@@ -9,15 +9,16 @@ import gregtech.api.gui.ModularUI;
 import gregtech.api.gui.widgets.SlotWidget;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityMultiblockNotifiablePart;
-import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
+import org.jetbrains.annotations.NotNull;
 import supercritical.api.metatileentity.multiblock.IFissionReactorHatch;
 import supercritical.api.metatileentity.multiblock.SCMultiblockAbility;
 
@@ -94,8 +95,8 @@ public class MetaTileEntityFuelRodExportBus extends MetaTileEntityMultiblockNoti
 	}
 
 	@Override
-	public void registerAbilities(List<IItemHandlerModifiable> abilityList) {
-		abilityList.add(this.exportItems);
+	public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
+		abilityInstances.add(this.exportItems);
 	}
 
 	@Override

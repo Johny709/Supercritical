@@ -6,15 +6,16 @@ import codechicken.lib.vec.Matrix4;
 import gregtech.api.gui.ModularUI;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityMultiblockNotifiablePart;
-import java.util.List;
 import lombok.Getter;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import org.jetbrains.annotations.NotNull;
 import supercritical.api.metatileentity.multiblock.IFissionReactorHatch;
 import supercritical.api.metatileentity.multiblock.SCMultiblockAbility;
 import supercritical.api.nuclear.fission.IModeratorStats;
@@ -74,8 +75,8 @@ public class MetaTileEntityModeratorPort extends MetaTileEntityMultiblockNotifia
 	}
 
 	@Override
-	public void registerAbilities(List<MetaTileEntityModeratorPort> abilityList) {
-		abilityList.add(this);
+	public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
+		abilityInstances.add(this);
 	}
 
 	@Override

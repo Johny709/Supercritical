@@ -8,23 +8,23 @@ import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.IMultiblockPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.api.metatileentity.multiblock.RecipeMapMultiblockController;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIBuilder;
 import gregtech.api.pattern.BlockPattern;
 import gregtech.api.pattern.FactoryBlockPattern;
 import gregtech.api.pattern.PatternMatchContext;
-import gregtech.api.util.TextComponentUtil;
+import gregtech.api.util.KeyUtil;
 import gregtech.client.renderer.ICubeRenderer;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.blocks.BlockMetalCasing;
 import gregtech.common.blocks.MetaBlocks;
-import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -42,7 +42,7 @@ public class MetaTileEntitySpentFuelPool extends RecipeMapMultiblockController {
 	public static final int PARALLEL_PER_LENGTH = 32;
 
 	private boolean waterFilled;
-	private List<BlockPos> waterPositions;
+	private LinkedList<BlockPos> waterPositions;
 
 	public MetaTileEntitySpentFuelPool(ResourceLocation metaTileEntityId) {
 		super(metaTileEntityId, SCRecipeMaps.SPENT_FUEL_POOL_RECIPES);
@@ -72,7 +72,7 @@ public class MetaTileEntitySpentFuelPool extends RecipeMapMultiblockController {
 		// noinspection DataFlowIssue
 		this.recipeMapWorkable.setParallelLimit(structurePattern.formedRepetitionCount[2] * PARALLEL_PER_LENGTH);
 
-		this.waterPositions = context.getOrDefault(FLUID_BLOCKS_KEY, new ArrayList<>());
+		this.waterPositions = context.getOrDefault(FLUID_BLOCKS_KEY, new LinkedList<>());
 		this.waterPositions.sort(Comparator.comparingInt(BlockPos::getY));
 		this.waterFilled = waterPositions.isEmpty();
 	}
@@ -133,14 +133,14 @@ public class MetaTileEntitySpentFuelPool extends RecipeMapMultiblockController {
 	}
 
 	@Override
-	protected void addErrorText(List<ITextComponent> textList) {
-		super.addErrorText(textList);
-		if (isStructureFormed() && !waterFilled) {
-			textList.add(TextComponentUtil.translationWithColor(TextFormatting.RED,
-					"supercritical.multiblock.spent_fuel_pool.obstructed"));
-			textList.add(TextComponentUtil.translationWithColor(TextFormatting.GRAY,
-					"supercritical.multiblock.spent_fuel_pool.obstructed.desc"));
-		}
+	protected void configureErrorText(MultiblockUIBuilder builder) {
+		super.configureErrorText(builder);
+		builder.addCustom((key, syncer) -> {
+			if (syncer.syncBoolean(this.isStructureFormed()) && !syncer.syncBoolean(this.waterFilled)) {
+				key.add(KeyUtil.lang(TextFormatting.RED, "supercritical.multiblock.spent_fuel_pool.obstructed"));
+				key.add(KeyUtil.lang(TextFormatting.GRAY, "supercritical.multiblock.spent_fuel_pool.obstructed.desc"));
+			}
+		});
 	}
 
 	@Override

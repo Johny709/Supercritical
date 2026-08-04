@@ -16,6 +16,7 @@ import gregtech.api.gui.widgets.SlotWidget;
 import gregtech.api.gui.widgets.TankWidget;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.client.renderer.texture.Textures;
@@ -147,8 +148,8 @@ public class MetaTileEntityCoolantImportHatch extends MetaTileEntityMultiblockNo
 	}
 
 	@Override
-	public void registerAbilities(List<ICoolantHandler> abilityList) {
-		abilityList.add(this);
+	public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
+		abilityInstances.add(this);
 	}
 
 	@Override

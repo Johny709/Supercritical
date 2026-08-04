@@ -2,6 +2,8 @@ package supercritical.common.materials;
 
 import static gregtech.api.GTValues.EV;
 import static gregtech.api.unification.material.Materials.*;
+import static gregtech.api.unification.material.Materials.Plutonium;
+import static gregtech.api.unification.material.Materials.Uranium;
 import static gregtech.api.unification.material.info.MaterialFlags.*;
 import static gregtech.api.unification.material.info.MaterialIconSet.*;
 import static supercritical.api.unification.material.SCMaterials.*;

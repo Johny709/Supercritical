@@ -2,8 +2,8 @@
     "modid": "${mod_id}",
     "name": "${mod_name}",
     "description": "(1.12) Adding fission reactor and atomic energy to GregTech CE Unofficial",
-    "version": "${mod_version}",
-    "mcversion": "${mc_version}",
+    "version": "0.2.6",
+    "mcversion": "1.12.2",
     "logoFile": "assets/supercritical/textures/supercritical_logo.png",
     "url": "https://github.com/SymmetricDevs/Supercritical",
     "authorList": [

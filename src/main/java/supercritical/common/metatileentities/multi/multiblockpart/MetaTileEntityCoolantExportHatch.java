@@ -16,11 +16,11 @@ import gregtech.api.gui.widgets.SlotWidget;
 import gregtech.api.gui.widgets.TankWidget;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
+import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityMultiblockNotifiablePart;
-import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
@@ -153,8 +153,8 @@ public class MetaTileEntityCoolantExportHatch extends MetaTileEntityMultiblockNo
 	}
 
 	@Override
-	public void registerAbilities(List<ICoolantHandler> abilityList) {
-		abilityList.add(this);
+	public void registerAbilities(@NotNull AbilityInstances abilityInstances) {
+		abilityInstances.add(this);
 	}
 
 	@Override

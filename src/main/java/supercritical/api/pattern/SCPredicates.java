@@ -6,7 +6,7 @@ import gregtech.api.metatileentity.multiblock.MultiblockControllerBase;
 import gregtech.api.pattern.TraceabilityPredicate;
 import gregtech.api.util.BlockInfo;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
@@ -54,11 +54,11 @@ public class SCPredicates {
 				: new BlockInfo(Blocks.AIR)});
 	}
 
-	public static void fillFluid(MultiblockControllerBase multi, List<BlockPos> toFill, FluidStack fluidStack) {
+	public static void fillFluid(MultiblockControllerBase multi, LinkedList<BlockPos> toFill, FluidStack fluidStack) {
 		fillFluid(multi, toFill, fluidStack.getFluid());
 	}
 
-	public static void fillFluid(MultiblockControllerBase multi, List<BlockPos> toFill, Fluid fluid) {
+	public static void fillFluid(MultiblockControllerBase multi, LinkedList<BlockPos> toFill, Fluid fluid) {
 		if (toFill.isEmpty())
 			return;
 

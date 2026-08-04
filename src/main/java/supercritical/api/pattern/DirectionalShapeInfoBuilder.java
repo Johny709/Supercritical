@@ -1,5 +1,6 @@
 package supercritical.api.pattern;
 
+import gregtech.api.GregTechAPI;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.MetaTileEntityHolder;
 import gregtech.api.pattern.MultiblockShapeInfo;
@@ -79,7 +80,7 @@ public class DirectionalShapeInfoBuilder extends MultiblockShapeInfo.Builder {
 		holder.setMetaTileEntity(tileEntity);
 		holder.getMetaTileEntity().onPlacement();
 		holder.getMetaTileEntity().setFrontFacing(frontSide);
-		return where(symbol, new BlockInfo(MetaBlocks.MACHINE.getDefaultState(), holder));
+		return where(symbol, new BlockInfo(MetaBlocks.MACHINE_CASING.getDefaultState(), holder));
 	}
 
 	/**
