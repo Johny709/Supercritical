@@ -2,8 +2,8 @@ package supercritical.common;
 
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.Config.*;
+import supercritical.supercritical.Tags;
 
-import supercritical.Tags;
 
 @Config(modid = Tags.MOD_ID)
 public class SCConfigHolder {

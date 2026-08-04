@@ -29,7 +29,6 @@ import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.registries.IForgeRegistry;
 import org.jetbrains.annotations.NotNull;
-import supercritical.Tags;
 import supercritical.api.nuclear.fission.CoolantRegistry;
 import supercritical.api.nuclear.fission.FissionFuelRegistry;
 import supercritical.api.nuclear.fission.ModeratorRegistry;
@@ -43,6 +42,7 @@ import supercritical.common.blocks.SCMetaBlocks;
 import supercritical.common.item.SCMetaItems;
 import supercritical.loaders.recipe.SCRecipeManager;
 import supercritical.modules.SCModules;
+import supercritical.supercritical.Tags;
 
 @Mod.EventBusSubscriber(modid = Tags.MOD_ID)
 public class CommonProxy {

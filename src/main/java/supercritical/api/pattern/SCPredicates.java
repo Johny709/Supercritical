@@ -15,12 +15,10 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants.BlockFlags;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import org.jspecify.annotations.NullMarked;
 import supercritical.common.SCConfigHolder;
 import supercritical.mixins.gregtech.AbstractRecipeLogicAccessor;
 
 @SuppressWarnings("unused")
-@NullMarked
 public class SCPredicates {
 
 	public static final String FLUID_BLOCKS_KEY = "FluidBlocks";

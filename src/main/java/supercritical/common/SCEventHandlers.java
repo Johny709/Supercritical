@@ -5,10 +5,10 @@ import gregtech.api.unification.material.event.PostMaterialEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import supercritical.Tags;
 import supercritical.api.unification.material.SCMaterials;
 import supercritical.api.unification.ore.SCOrePrefix;
 import supercritical.common.materials.*;
+import supercritical.supercritical.Tags;
 
 @Mod.EventBusSubscriber(modid = Tags.MOD_ID)
 public final class SCEventHandlers {

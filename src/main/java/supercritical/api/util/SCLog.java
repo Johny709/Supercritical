@@ -3,7 +3,7 @@ package supercritical.api.util;
 import lombok.experimental.UtilityClass;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import supercritical.Tags;
+import supercritical.supercritical.Tags;
 
 @UtilityClass
 public final class SCLog {

@@ -13,13 +13,13 @@ import mezz.jei.api.recipe.IRecipeCategoryRegistration;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.Fluid;
 import org.jetbrains.annotations.NotNull;
-import supercritical.Tags;
 import supercritical.api.nuclear.fission.CoolantRegistry;
 import supercritical.api.nuclear.fission.FissionFuelRegistry;
 import supercritical.api.nuclear.fission.ModeratorRegistry;
 import supercritical.common.metatileentities.SCMetaTileEntities;
 import supercritical.integration.jei.basic.*;
 import supercritical.modules.SCModules;
+import supercritical.supercritical.Tags;
 
 @JEIPlugin
 @GregTechModule(moduleID = SCModules.MODULE_JEI, containerID = Tags.MOD_ID, modDependencies = Mods.Names.JUST_ENOUGH_ITEMS, name = "Supercritical JEI Integration", description = "Supercritical JustEnoughItems Integration Module")

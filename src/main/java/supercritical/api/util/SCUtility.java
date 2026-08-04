@@ -3,7 +3,7 @@ package supercritical.api.util;
 import lombok.experimental.UtilityClass;
 import net.minecraft.util.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
-import supercritical.Tags;
+import supercritical.supercritical.Tags;
 
 @UtilityClass
 public class SCUtility {

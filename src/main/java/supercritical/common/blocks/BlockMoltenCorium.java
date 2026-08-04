@@ -21,7 +21,7 @@ import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.fluids.Fluid;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import supercritical.Tags;
+import supercritical.supercritical.Tags;
 
 public class BlockMoltenCorium extends GTFluidBlock {
 

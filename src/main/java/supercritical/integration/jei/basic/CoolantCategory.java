@@ -11,8 +11,8 @@ import mezz.jei.api.recipe.IRecipeWrapper;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import supercritical.Tags;
 import supercritical.common.metatileentities.SCMetaTileEntities;
+import supercritical.supercritical.Tags;
 
 public class CoolantCategory extends BasicRecipeCategory<CoolantInfo, CoolantInfo> {
 

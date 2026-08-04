@@ -2,7 +2,7 @@ package supercritical.modules;
 
 import gregtech.api.modules.IModuleContainer;
 import gregtech.api.modules.ModuleContainer;
-import supercritical.Tags;
+import supercritical.supercritical.Tags;
 
 @ModuleContainer
 public class SCModules implements IModuleContainer {
