@@ -2,6 +2,7 @@ package supercritical.common;
 
 import gregtech.api.GregTechAPI;
 import gregtech.api.block.VariantItemBlock;
+import gregtech.api.metatileentity.registry.MTEManager;
 import gregtech.api.modules.ModuleContainerRegistryEvent;
 import gregtech.api.unification.OreDictUnifier;
 import gregtech.api.unification.material.Material;
@@ -82,6 +83,11 @@ public class CommonProxy {
 		ItemBlock itemBlock = producer.apply(block);
 		itemBlock.setRegistryName(Objects.requireNonNull(block.getRegistryName()));
 		return itemBlock;
+	}
+
+	@SubscribeEvent
+	public static void registerMTERegistry(MTEManager.MTERegistryEvent event) {
+		GregTechAPI.mteManager.createRegistry(Tags.MOD_ID);
 	}
 
 	@SubscribeEvent
