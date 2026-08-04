@@ -3,6 +3,10 @@ package supercritical.common.metatileentities.multi;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
+import com.cleanroommc.modularui.value.sync.BooleanSyncValue;
+import com.cleanroommc.modularui.value.sync.DoubleSyncValue;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
+import com.cleanroommc.modularui.widgets.ToggleButton;
 import gregtech.api.capability.IMaintenanceHatch;
 import gregtech.api.metatileentity.IDataInfoProvider;
 import gregtech.api.metatileentity.MetaTileEntity;
@@ -10,6 +14,9 @@ import gregtech.api.metatileentity.MetaTileEntityHolder;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.*;
 import gregtech.api.metatileentity.multiblock.ui.MultiblockUIBuilder;
+import gregtech.api.metatileentity.multiblock.ui.MultiblockUIFactory;
+import gregtech.api.metatileentity.multiblock.ui.TemplateBarBuilder;
+import gregtech.api.mui.GTGuiTextures;
 import gregtech.api.pattern.*;
 import gregtech.api.util.*;
 import gregtech.client.renderer.ICubeRenderer;
@@ -19,6 +26,8 @@ import gregtech.common.metatileentities.MetaTileEntities;
 import it.unimi.dsi.fastutil.Hash;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenCustomHashMap;
 import java.util.*;
+import java.util.function.UnaryOperator;
+
 import lombok.Getter;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.resources.I18n;
@@ -44,6 +53,7 @@ import supercritical.SCValues;
 import supercritical.api.capability.ICoolantHandler;
 import supercritical.api.capability.IFuelRodHandler;
 import supercritical.api.cover.ICustomEnergyCover;
+import supercritical.api.gui.SCGuiTextures;
 import supercritical.api.metatileentity.multiblock.IFissionReactorHatch;
 import supercritical.api.metatileentity.multiblock.SCMultiblockAbility;
 import supercritical.api.nuclear.fission.*;
@@ -65,7 +75,7 @@ import supercritical.common.metatileentities.multi.multiblockpart.MetaTileEntity
 public class MetaTileEntityFissionReactor extends MultiblockWithDisplayBase
 		implements
 			IDataInfoProvider,
-			IProgressBarMultiblock,
+			ProgressBarMultiblock,
 			ICustomEnergyCover {
 
 	private FissionReactor fissionReactor;
@@ -109,20 +119,6 @@ public class MetaTileEntityFissionReactor extends MultiblockWithDisplayBase
 
 	@NotNull protected static IBlockState getVesselState() {
 		return SCMetaBlocks.FISSION_CASING.getState(BlockFissionCasing.FissionCasingType.REACTOR_VESSEL);
-	}
-
-	@Override
-	public double getFillPercentage(int index) {
-		if (index == 0) {
-			return this.temperature / this.maxTemperature;
-		} else if (index == 1) {
-			return this.pressure / this.maxPressure;
-		} else {
-			if (this.maxPower / this.power > Math.exp(9)) {
-				return 0;
-			}
-			return (Math.log(this.power / this.maxPower) + 9) / 9;
-		}
 	}
 
 	@NotNull protected static IBlockState getFuelChannelState() {
@@ -172,20 +168,6 @@ public class MetaTileEntityFissionReactor extends MultiblockWithDisplayBase
 			lockAndPrepareReactor();
 		else
 			unlockAll();
-	}
-
-	@Override
-	public void addBarHoverText(List<ITextComponent> list, int index) {
-		if (index == 0) {
-			list.add(new TextComponentTranslation("supercritical.gui.fission.temperature",
-					String.format("%.1f", this.temperature) + " / " + String.format("%.1f", this.maxTemperature)));
-		} else if (index == 1) {
-			list.add(new TextComponentTranslation("supercritical.gui.fission.pressure",
-					String.format("%.0f", this.pressure) + " / " + String.format("%.0f", this.maxPressure)));
-		} else {
-			list.add(new TextComponentTranslation("supercritical.gui.fission.power", String.format("%.1f", this.power),
-					String.format("%.1f", this.maxPower)));
-		}
 	}
 
 	@Override
@@ -1044,5 +1026,86 @@ public class MetaTileEntityFissionReactor extends MultiblockWithDisplayBase
 	@Override
 	public boolean allowsExtendedFacing() {
 		return SCConfigHolder.misc.allowExtendedFacingForFissionReactor;
+	}
+
+	@Override
+	public int getProgressBarCount() {
+		return 3;
+	}
+
+	@Override
+	public void registerBars(List<UnaryOperator<TemplateBarBuilder>> bars, PanelSyncManager panelSyncManager) {
+		DoubleSyncValue temperatureValue = new DoubleSyncValue(this::getTemperature);
+		DoubleSyncValue maxTemperatureValue = new DoubleSyncValue(this::getMaxTemperature);
+		DoubleSyncValue pressureValue = new DoubleSyncValue(this::getPressure);
+		DoubleSyncValue maxPressureValue = new DoubleSyncValue(this::getMaxPressure);
+		DoubleSyncValue powerValue = new DoubleSyncValue(this::getPower);
+		DoubleSyncValue maxPowerValue = new DoubleSyncValue(this::getMaxPower);
+		panelSyncManager.syncValue("temperature", temperatureValue);
+		panelSyncManager.syncValue("max_temperature", maxTemperatureValue);
+		panelSyncManager.syncValue("pressure", pressureValue);
+		panelSyncManager.syncValue("max_pressure", maxPressureValue);
+		panelSyncManager.syncValue("power", powerValue);
+		panelSyncManager.syncValue("max_power", maxPowerValue);
+		bars.add(bar -> bar.progress(() -> maxTemperatureValue.getDoubleValue() == 0 ? 0 :
+						temperatureValue.getDoubleValue() / maxTemperatureValue.getDoubleValue())
+				.texture(SCGuiTextures.PROGRESS_BAR_FISSION_HEAT_2)
+				.tooltipBuilder(richTooltip -> {
+					if (this.isStructureFormed()) {
+						richTooltip.addLine(KeyUtil.lang("supercritical.gui.fission.temperature",
+								String.format("%.1f", temperatureValue.getDoubleValue()) + " / " +
+										String.format("%.1f", maxTemperatureValue.getDoubleValue())));
+					} else richTooltip.addLine(KeyUtil.lang("gregtech.multiblock.invalid_structure"));
+				}));
+		bars.add(bar -> bar.progress(() -> maxPressureValue.getDoubleValue() == 0 ? 0 :
+						pressureValue.getDoubleValue() / maxPressureValue.getDoubleValue())
+				.texture(SCGuiTextures.PROGRESS_BAR_FISSION_PRESSURE_2)
+				.tooltipBuilder(richTooltip -> {
+					if (this.isStructureFormed()) {
+						richTooltip.addLine(KeyUtil.lang("supercritical.gui.fission.pressure",
+								String.format("%.0f", pressureValue.getDoubleValue()) + " / " +
+										String.format("%.0f", maxPressureValue.getDoubleValue())));
+					} else richTooltip.addLine(KeyUtil.lang("gregtech.multiblock.invalid_structure"));
+				}));
+		bars.add(bar -> bar.progress(() -> maxPowerValue.getDoubleValue() == 0 ? 0 :
+						powerValue.getDoubleValue() / maxPowerValue.getDoubleValue())
+				.texture(SCGuiTextures.PROGRESS_BAR_FISSION_ENERGY_2)
+				.tooltipBuilder(richTooltip -> {
+					if (this.isStructureFormed()) {
+						richTooltip.addLine(KeyUtil.lang("supercritical.gui.fission.power",
+								String.format("%.1f", powerValue.getDoubleValue()),
+								String.format("%.1f", maxPowerValue.getDoubleValue())));
+					} else richTooltip.addLine(KeyUtil.lang("gregtech.multiblock.invalid_structure"));
+				}));
+	}
+
+	@Override
+	protected MultiblockUIFactory createUIFactory() {
+		return super.createUIFactory()
+				.setSize(240, 208)
+				.createFlexButton(((posGuiData, panelSyncManager) -> {
+					BooleanSyncValue isLockedValue = new BooleanSyncValue(this::isLocked, this::tryLocking);
+					panelSyncManager.syncValue("is_locked", isLockedValue);
+					BooleanSyncValue areControlRodsRegulatedValue = new BooleanSyncValue(this::areControlRodsRegulated, this::toggleControlRodRegulation);
+					panelSyncManager.syncValue("rods_regulated", areControlRodsRegulatedValue);
+					return new ToggleButton()
+							.top(58)
+							.value(isLockedValue)
+							.overlay(GTGuiTextures.BUTTON_LOCK)
+							.tooltip(richTooltip -> {
+								if (isLockedValue.getBoolValue()) {
+									richTooltip.addLine(KeyUtil.lang("supercritical.gui.fission.lock.locked"));
+								} else richTooltip.addLine(KeyUtil.lang("supercritical.gui.fission.lock.unlocked"));
+							})
+							.child(new ToggleButton()
+									.bottom(22)
+									.value(areControlRodsRegulatedValue)
+									.stateOverlay(SCGuiTextures.BUTTON_CONTROL_ROD_HELPER_2)
+									.tooltip(richTooltip -> {
+										if (areControlRodsRegulatedValue.getBoolValue()) {
+											richTooltip.addLine(KeyUtil.lang("supercritical.gui.fission.helper.enabled"));
+										} else richTooltip.addLine(KeyUtil.lang("supercritical.gui.fission.helper.disabled"));
+									}));
+				}));
 	}
 }
