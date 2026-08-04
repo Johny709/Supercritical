@@ -904,8 +904,17 @@ public class MetaTileEntityFissionReactor extends MultiblockWithDisplayBase
 		INVALID_COMPONENT
 	}
 
+	/** TODO fix fission reactor multiblock JEI preview
+	 * java.lang.ArrayIndexOutOfBoundsException: Index 0 out of bounds for length 0
+	 * 	at gregtech.api.pattern.MultiblockShapeInfo$Builder.<init>(MultiblockShapeInfo.java:63)
+	 * 	at supercritical.api.pattern.DirectionalShapeInfoBuilder.<init>(DirectionalShapeInfoBuilder.java:39)
+	 * 	at supercritical.common.metatileentities.multi.MetaTileEntityFissionReactor.getMatchingShapes(MetaTileEntityFissionReactor.java:989)
+	 * 	at gregtech.integration.jei.multiblock.MultiblockInfoRecipeWrapper.<init>(MultiblockInfoRecipeWrapper.java:128)
+	 */
 	@Override
 	public List<MultiblockShapeInfo> getMatchingShapes() {
+		if (true)
+			return super.getMatchingShapes();
 		List<MultiblockShapeInfo> shapes = new ArrayList<>();
 
 		for (int diameter = 5; diameter <= 15; diameter += 2) {
