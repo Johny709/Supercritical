@@ -45,7 +45,7 @@ public class SCPredicates {
 						// but this should be enough for now.
 						// Using an [ArrayList] here since we need to sort this later.
 						// [LinkedList] would be horrible for that
-						.getOrPut(FLUID_BLOCKS_KEY, new ArrayList<>()).add(bws.getPos());
+						.getOrPut(FLUID_BLOCKS_KEY, new LinkedList<>()).add(bws.getPos());
 				return true;
 			}
 			return false;
