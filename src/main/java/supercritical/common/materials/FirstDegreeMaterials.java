@@ -46,20 +46,11 @@ public class FirstDegreeMaterials {
 				.color(0x43A333).flags(DISABLE_DECOMPOSITION).components(Uranium235, 1, Oxygen, 2).build()
 				.setFormula("UO2", true);
 
-		Zircon = new Material.Builder(506, scId("zircon")).gem().ore().color(0x6E0909).flags(DISABLE_DECOMPOSITION)
-				.components(Zirconium, 1, Silicon, 1, Oxygen, 4).iconSet(SHINY).build();
-
 		ZirconiumDioxide = new Material.Builder(507, scId("zirconium_dioxide")).dust().color(0x689F9F)
 				.flags(DISABLE_DECOMPOSITION).components(Zirconium, 1, Oxygen, 2).build();
 
-		ZirconiumTetrachloride = new Material.Builder(508, scId("zirconium_tetrachloride")).dust().color(0x689FBF)
-				.flags(DISABLE_DECOMPOSITION).components(Zirconium, 1, Chlorine, 4).iconSet(SHINY).build();
-
 		HafniumDioxide = new Material.Builder(509, scId("hafnium_dioxide")).dust().color(0x39393A)
 				.flags(DISABLE_DECOMPOSITION).components(Hafnium, 1, Oxygen, 2).build();
-
-		HafniumTetrachloride = new Material.Builder(510, scId("hafnium_tetrachloride")).dust().color(0x69699A)
-				.flags(DISABLE_DECOMPOSITION).components(Hafnium, 1, Chlorine, 4).iconSet(SHINY).build();
 
 		Inconel = new Material.Builder(511, scId("inconel")).ingot().fluid().color(0x7F8F75).iconSet(SHINY)
 				.flags(GENERATE_DOUBLE_PLATE, GENERATE_SPRING, DISABLE_DECOMPOSITION)
