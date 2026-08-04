@@ -6,6 +6,8 @@ import codechicken.lib.vec.Matrix4;
 import com.cleanroommc.modularui.value.sync.BooleanSyncValue;
 import com.cleanroommc.modularui.value.sync.DoubleSyncValue;
 import com.cleanroommc.modularui.value.sync.PanelSyncManager;
+import com.cleanroommc.modularui.widgets.RichTextWidget;
+import com.cleanroommc.modularui.widgets.SliderWidget;
 import com.cleanroommc.modularui.widgets.ToggleButton;
 import gregtech.api.capability.IMaintenanceHatch;
 import gregtech.api.metatileentity.IDataInfoProvider;
@@ -146,7 +148,7 @@ public class MetaTileEntityFissionReactor extends MultiblockWithDisplayBase
 		return SCMetaBlocks.FISSION_CASING.getState(BlockFissionCasing.FissionCasingType.CONTROL_ROD_CHANNEL);
 	}
 
-	public void setControlRodInsertion(float value) {
+	public void setControlRodInsertion(double value) {
 		this.controlRodInsertion = value;
 		if (fissionReactor != null)
 			fissionReactor.updateControlRodInsertion(controlRodInsertion);
@@ -1083,6 +1085,24 @@ public class MetaTileEntityFissionReactor extends MultiblockWithDisplayBase
 	protected MultiblockUIFactory createUIFactory() {
 		return super.createUIFactory()
 				.setSize(240, 208)
+				.addScreenChildren((parentWidget, panelSyncManager) -> {
+					DoubleSyncValue rodInsertionValue = new DoubleSyncValue(this::getControlRodInsertion, this::setControlRodInsertion);
+					panelSyncManager.syncValue("rod_insertion", rodInsertionValue);
+					parentWidget.child(new SliderWidget()
+							.pos(2, 50)
+							.size(186, 20)
+							.value(rodInsertionValue)
+							.sliderSize(8, 20)
+							.sliderTexture(SCGuiTextures.DARK_SLIDER_ICON_2)
+							.background(SCGuiTextures.DARK_SLIDER_BACKGROUND_2));
+					parentWidget.child(new RichTextWidget()
+							.pos(6, 50)
+							.size(186, 20)
+							.autoUpdate(true)
+							.textBuilder(richText -> richText.addLine(KeyUtil.lang(TextFormatting.WHITE,
+									"supercritical.gui.fission.control_rod_insertion",
+									String.format("%.2f%%", rodInsertionValue.getDoubleValue())))));
+				})
 				.createFlexButton(((posGuiData, panelSyncManager) -> {
 					BooleanSyncValue isLockedValue = new BooleanSyncValue(this::isLocked, this::tryLocking);
 					panelSyncManager.syncValue("is_locked", isLockedValue);
@@ -1092,16 +1112,16 @@ public class MetaTileEntityFissionReactor extends MultiblockWithDisplayBase
 							.top(58)
 							.value(isLockedValue)
 							.overlay(GTGuiTextures.BUTTON_LOCK)
-							.tooltip(richTooltip -> {
+							.tooltipDynamic(richTooltip -> {
 								if (isLockedValue.getBoolValue()) {
-									richTooltip.addLine(KeyUtil.lang("supercritical.gui.fission.lock.locked"));
-								} else richTooltip.addLine(KeyUtil.lang("supercritical.gui.fission.lock.unlocked"));
+									richTooltip.addLine(KeyUtil.lang("supercritical.gui.fission.lock.enabled"));
+								} else richTooltip.addLine(KeyUtil.lang("supercritical.gui.fission.lock.disabled"));
 							})
 							.child(new ToggleButton()
 									.bottom(22)
 									.value(areControlRodsRegulatedValue)
 									.stateOverlay(SCGuiTextures.BUTTON_CONTROL_ROD_HELPER_2)
-									.tooltip(richTooltip -> {
+									.tooltipDynamic(richTooltip -> {
 										if (areControlRodsRegulatedValue.getBoolValue()) {
 											richTooltip.addLine(KeyUtil.lang("supercritical.gui.fission.helper.enabled"));
 										} else richTooltip.addLine(KeyUtil.lang("supercritical.gui.fission.helper.disabled"));

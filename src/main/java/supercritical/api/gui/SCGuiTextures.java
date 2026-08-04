@@ -24,6 +24,10 @@ public class SCGuiTextures {
 	// Nuclear GuiTextures (MUI2)
 	public static final UITexture BUTTON_CONTROL_ROD_HELPER_2 = UITexture
 			.fullImage(Tags.MOD_ID, "textures/gui/widget/button_control_rod_helper.png");
+	public static final UITexture DARK_SLIDER_BACKGROUND_2 = UITexture
+			.fullImage(Tags.MOD_ID, "textures/gui/widget/dark_slider_background.png");
+	public static final UITexture DARK_SLIDER_ICON_2 = UITexture
+			.fullImage(Tags.MOD_ID, "textures/gui/widget/dark_slider.png");
 	public static final UITexture PROGRESS_BAR_FISSION_HEAT_2 = UITexture
 			.fullImage(Tags.MOD_ID, "textures/gui/progress_bar/progress_bar_fission_heat.png");
 	public static final UITexture PROGRESS_BAR_FISSION_PRESSURE_2 = UITexture
