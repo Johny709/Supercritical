@@ -887,13 +887,6 @@ public class MetaTileEntityFissionReactor extends MultiblockWithDisplayBase
 		INVALID_COMPONENT
 	}
 
-	/** TODO fix fission reactor multiblock JEI preview
-	 * java.lang.ArrayIndexOutOfBoundsException: Index 0 out of bounds for length 0
-	 * 	at gregtech.api.pattern.MultiblockShapeInfo$Builder.<init>(MultiblockShapeInfo.java:63)
-	 * 	at supercritical.api.pattern.DirectionalShapeInfoBuilder.<init>(DirectionalShapeInfoBuilder.java:39)
-	 * 	at supercritical.common.metatileentities.multi.MetaTileEntityFissionReactor.getMatchingShapes(MetaTileEntityFissionReactor.java:989)
-	 * 	at gregtech.integration.jei.multiblock.MultiblockInfoRecipeWrapper.<init>(MultiblockInfoRecipeWrapper.java:128)
-	 */
 	@Override
 	public List<MultiblockShapeInfo> getMatchingShapes() {
 		List<MultiblockShapeInfo> shapes = new ArrayList<>();
@@ -1083,7 +1076,7 @@ public class MetaTileEntityFissionReactor extends MultiblockWithDisplayBase
 		return super.createUIFactory()
 				.setSize(240, 208)
 				.addScreenChildren((parentWidget, panelSyncManager) -> {
-					DoubleSyncValue rodInsertionValue = new DoubleSyncValue(this::getControlRodInsertion, this::setControlRodInsertion);
+					DoubleSyncValue rodInsertionValue = new DoubleSyncValue(this::getActualControlRodInsertion, this::setActualControlRodInsertion);
 					panelSyncManager.syncValue("rod_insertion", rodInsertionValue);
 					parentWidget.child(new SliderWidget()
 							.pos(2, 50)
@@ -1124,5 +1117,13 @@ public class MetaTileEntityFissionReactor extends MultiblockWithDisplayBase
 										} else richTooltip.addLine(KeyUtil.lang("supercritical.gui.fission.helper.disabled"));
 									}));
 				}));
+	}
+
+	private void setActualControlRodInsertion(double controlRodInsertion) {
+		this.setControlRodInsertion(controlRodInsertion / 100);
+	}
+
+	private double getActualControlRodInsertion() {
+		return this.controlRodInsertion * 100;
 	}
 }
