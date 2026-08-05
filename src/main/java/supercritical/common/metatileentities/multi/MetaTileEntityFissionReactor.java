@@ -63,7 +63,6 @@ import supercritical.api.nuclear.fission.components.ControlRod;
 import supercritical.api.nuclear.fission.components.CoolantChannel;
 import supercritical.api.nuclear.fission.components.FuelRod;
 import supercritical.api.nuclear.fission.components.Moderator;
-import supercritical.api.pattern.DirectionalShapeInfoBuilder;
 import supercritical.api.unification.material.SCMaterials;
 import supercritical.api.util.SCUtility;
 import supercritical.client.renderer.textures.SCTextures;
@@ -897,8 +896,6 @@ public class MetaTileEntityFissionReactor extends MultiblockWithDisplayBase
 	 */
 	@Override
 	public List<MultiblockShapeInfo> getMatchingShapes() {
-		if (true)
-			return super.getMatchingShapes();
 		List<MultiblockShapeInfo> shapes = new ArrayList<>();
 
 		for (int diameter = 5; diameter <= 15; diameter += 2) {
@@ -979,7 +976,7 @@ public class MetaTileEntityFissionReactor extends MultiblockWithDisplayBase
 				topSlice[i] = topSlice[i].replace('A', 'V');
 				bottomSlice[i] = bottomSlice[i].replace('A', 'V');
 			}
-			DirectionalShapeInfoBuilder builder = new DirectionalShapeInfoBuilder(RelativeDirection.RIGHT,
+			MultiblockShapeInfo.Builder builder = MultiblockShapeInfo.builder(RelativeDirection.RIGHT,
 					RelativeDirection.FRONT, RelativeDirection.UP);
 			builder.aisle(topSlice);
 			for (int i = 0; i < heightBottom - 1; i++) {
