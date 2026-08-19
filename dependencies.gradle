@@ -96,5 +96,5 @@ dependencies {
     compileOnly(rfg.deobf("curse.maven:littletiles-257818:4750222")) // LittleTiles 1.5.82-1.12.2
     compileOnly(rfg.deobf("curse.maven:creativecore-257814:4722163")) // Creative Core 1.10.71
     api("com.cleanroommc:modularui:3.1.6") { transitive = false }
-    api("com.cleanroommc:groovyscript:1.2.0-hotfix1") { transitive = false }
+    api("com.cleanroommc:groovyscript:1.4.3") { transitive = false }
 }
