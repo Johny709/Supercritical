@@ -5,33 +5,41 @@ import static supercritical.SCValues.FISSION_LOCK_UPDATE;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.screen.UISettings;
+import com.cleanroommc.modularui.value.sync.IntSyncValue;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
+import com.cleanroommc.modularui.value.sync.StringSyncValue;
+import com.cleanroommc.modularui.widgets.RichTextWidget;
+import com.cleanroommc.modularui.widgets.slot.FluidSlot;
+import com.cleanroommc.modularui.widgets.slot.ItemSlot;
+import com.cleanroommc.modularui.widgets.slot.ModularSlot;
+import com.cleanroommc.modularui.widgets.slot.SlotGroup;
 import gregtech.api.capability.IControllable;
 import gregtech.api.capability.impl.FilteredItemHandler;
 import gregtech.api.capability.impl.FluidTankList;
-import gregtech.api.gui.GuiTextures;
-import gregtech.api.gui.ModularUI;
-import gregtech.api.gui.widgets.FluidContainerSlotWidget;
-import gregtech.api.gui.widgets.ImageWidget;
-import gregtech.api.gui.widgets.SlotWidget;
-import gregtech.api.gui.widgets.TankWidget;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
+import gregtech.api.mui.GTGuiTextures;
+import gregtech.api.mui.IMetaTileEntityGuiHolder;
+import gregtech.api.mui.MetaTileEntityGuiData;
+import gregtech.api.util.KeyUtil;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityMultiblockNotifiablePart;
 import java.util.List;
 import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
-import net.minecraftforge.fluids.IFluidTank;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
@@ -50,7 +58,8 @@ public class MetaTileEntityCoolantImportHatch extends MetaTileEntityMultiblockNo
 			IMultiblockAbilityPart<ICoolantHandler>,
 			ICoolantHandler,
 			IControllable,
-			IFissionReactorHatch {
+			IFissionReactorHatch,
+			IMetaTileEntityGuiHolder {
 
 	private boolean workingEnabled;
 	private LockableFluidTank fluidTank;
@@ -83,31 +92,45 @@ public class MetaTileEntityCoolantImportHatch extends MetaTileEntityMultiblockNo
 	}
 
 	@Override
-	protected ModularUI createUI(EntityPlayer entityPlayer) {
-		return createTankUI(fluidTank, getMetaFullName(), entityPlayer).build(getHolder(), entityPlayer);
-	}
+	public @NotNull ModularPanel buildUI(MetaTileEntityGuiData metaTileEntityGuiData, PanelSyncManager syncManager, UISettings uiSettings) {
+		IntSyncValue fluidAmount = new IntSyncValue(this.fluidTank::getFluidAmount);
+		StringSyncValue fluidName = new StringSyncValue(() -> this.fluidTank.getFluid() != null ? this.fluidTank.getFluid().getLocalizedName() : "");
+		syncManager.syncValue("fluid_amount", fluidAmount);
+		syncManager.syncValue("fluid_name", fluidName);
+		syncManager.registerSlotGroup(new SlotGroup("bucket_in", 1, 1, true));
 
-	public ModularUI.Builder createTankUI(IFluidTank fluidTank, String title, EntityPlayer entityPlayer) {
-		ModularUI.Builder builder = ModularUI.defaultBuilder();
-		builder.image(7, 16, 131, 55, GuiTextures.DISPLAY);
-		TankWidget tankWidget = new TankWidget(fluidTank, 119, 52, 18, 18).setHideTooltip(true).setAlwaysShowFull(true);
-		builder.widget(tankWidget);
-		builder.label(11, 20, "gregtech.gui.fluid_amount", 0xFFFFFF);
-		builder.dynamicLabel(11, 30, tankWidget::getFormattedFluidAmount, 0xFFFFFF);
-		builder.dynamicLabel(11, 40, () -> {
-			if (isLocked()) {
-				return tankWidget.getFluidLocalizedName() + " " + I18n.format("supercritical.gui.locked");
-			} else {
-				return tankWidget.getFluidLocalizedName();
-			}
-		}, 0xFFFFFF);
-		return builder.label(6, 6, title)
-				.widget(new FluidContainerSlotWidget(importItems, 0, 140, 16, false)
-						.setBackgroundTexture(GuiTextures.SLOT, GuiTextures.IN_SLOT_OVERLAY))
-				.widget(new ImageWidget(141, 36, 14, 15, GuiTextures.TANK_ICON))
-				.widget(new SlotWidget(exportItems, 0, 140, 53, true, false).setBackgroundTexture(GuiTextures.SLOT,
-						GuiTextures.OUT_SLOT_OVERLAY))
-				.bindPlayerInventory(entityPlayer.inventory);
+		return ModularPanel.defaultPanel("coolant_import_hatch")
+				.child(IKey.lang(this.getMetaFullName()).asWidget()
+						.pos(6, 5))
+				.child(GTGuiTextures.DISPLAY.asWidget()
+						.pos(7, 16)
+						.size(131, 55))
+				.child(new FluidSlot()
+						.pos(119, 52)
+						.tank(this.fluidTank))
+				.child(new RichTextWidget()
+						.pos(11, -29)
+						.size(127)
+						.autoUpdate(true)
+						.textBuilder(richText -> {
+							richText.addLine(KeyUtil.lang(TextFormatting.WHITE, "gregtech.gui.fluid_amount"));
+							richText.addLine(KeyUtil.string(TextFormatting.WHITE, String.valueOf(fluidAmount.getStringValue())));
+							richText.addLine(KeyUtil.string(TextFormatting.WHITE, fluidName.getStringValue()));
+						}))
+				.child(new ItemSlot()
+						.pos(140, 16)
+						.background(GTGuiTextures.SLOT, GTGuiTextures.IN_SLOT_OVERLAY)
+						.slot(new ModularSlot(this.importItems, 0)
+								.slotGroup("bucket_in")))
+				.child(GTGuiTextures.TANK_ICON.asWidget()
+						.pos(141, 36)
+						.size(14, 15))
+				.child(new ItemSlot()
+						.pos(140, 53)
+						.background(GTGuiTextures.SLOT, GTGuiTextures.OUT_SLOT_OVERLAY)
+						.slot(new ModularSlot(this.exportItems, 0)
+								.canPut(false)))
+				.bindPlayerInventory();
 	}
 
 	@Override
