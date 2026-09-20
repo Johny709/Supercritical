@@ -5,15 +5,24 @@ import static supercritical.SCValues.FISSION_LOCK_UPDATE;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.screen.UISettings;
+import com.cleanroommc.modularui.value.sync.*;
+import com.cleanroommc.modularui.widgets.ButtonWidget;
+import com.cleanroommc.modularui.widgets.RichTextWidget;
+import com.cleanroommc.modularui.widgets.slot.ItemSlot;
+import com.cleanroommc.modularui.widgets.slot.ModularSlot;
+import com.cleanroommc.modularui.widgets.slot.SlotGroup;
 import gregtech.api.capability.IControllable;
-import gregtech.api.gui.GuiTextures;
-import gregtech.api.gui.ModularUI;
-import gregtech.api.gui.widgets.*;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
+import gregtech.api.mui.GTGuiTextures;
+import gregtech.api.mui.IMetaTileEntityGuiHolder;
+import gregtech.api.mui.MetaTileEntityGuiData;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityMultiblockNotifiablePart;
 import java.io.IOException;
@@ -25,7 +34,6 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
@@ -47,7 +55,8 @@ public class MetaTileEntityFuelRodImportBus extends MetaTileEntityMultiblockNoti
 			IMultiblockAbilityPart<IFuelRodHandler>,
 			IFuelRodHandler,
 			IControllable,
-			IFissionReactorHatch {
+			IFissionReactorHatch,
+			IMetaTileEntityGuiHolder {
 
 	private boolean workingEnabled;
 	private IFissionFuelStats fuelProperty;
@@ -86,31 +95,58 @@ public class MetaTileEntityFuelRodImportBus extends MetaTileEntityMultiblockNoti
 		return new LockableItemStackHandler(this, false);
 	}
 
-	private ModularUI.Builder createUITemplate(EntityPlayer player) {
-		ModularUI.Builder builder = ModularUI.builder(GuiTextures.BACKGROUND, 176, 163).label(10, 5, getMetaFullName());
+	@Override
+	public @NotNull ModularPanel buildUI(MetaTileEntityGuiData metaTileEntityGuiData, PanelSyncManager syncManager, UISettings uiSettings) {
+		DoubleSyncValue depletionRatio = new DoubleSyncValue(this::getCurrentDepletionRatio);
+		StringSyncValue depletedRod = new StringSyncValue(this.getDepletedFuel()::getDisplayName);
+		syncManager.syncValue("depletion_ratio", depletionRatio);
+		syncManager.syncValue("depleted_rod", depletedRod);
+		syncManager.syncValue("void_partial_fuel", new InteractionSyncHandler()
+				.setOnMousePressed(mouseData -> this.voidPartialFuel()));
+		syncManager.registerSlotGroup(new SlotGroup("fuel_input", 1, 1, true));
 
-		builder.widget(new BlockableSlotWidget(importItems, 0, 40, 18, true, true).setIsBlocked(this::isLocked)
-				.setBackgroundTexture(GuiTextures.SLOT));
+		return ModularPanel.defaultPanel("fuel_rod_import")
+				.child(IKey.lang(this.getMetaFullName()).asWidget()
+						.pos(10, 5))
+				.child(new ItemSlot()
+						.pos(40, 18)
+						.background(GTGuiTextures.SLOT)
+						.slot(new ModularSlot(this.importItems, 0) {
+							@Override
+							public boolean isItemValid(@NotNull ItemStack stack) {
+								return !isLocked() && super.isItemValid(stack);
+							}
 
-		builder.widget(new SlotWidget(partialFuelDisplay, 0, 118, 18, false, false)
-				.setBackgroundTexture(GuiTextures.MAINTENANCE_ICON));
-
-		builder.widget(new ClickButtonWidget(140, 18, 18, 18, "", (d) -> voidPartialFuel())
-				.setTooltipText("supercritical.gui.void_fuel").setButtonTexture(GuiTextures.BUTTON_VOID_NONE)
-				.setShouldClientCallback(true));
-
-		builder.widget(new AdvancedTextWidget(10, 43, (list) -> {
-			list.add(new TextComponentTranslation("supercritical.gui.fission.depletion",
-					String.format("%.2f", getCurrentDepletionRatio() * 100)));
-		}, 0));
-		builder.widget(new AdvancedTextWidget(10, 60, (list) -> {
-			ItemStack depleted = getDepletedFuel();
-			String translation = depleted.getItem().getItemStackDisplayName(depleted);
-			list.add(new TextComponentTranslation("supercritical.gui.fission.depleted_rod",
-					translation.substring(0, Math.min(translation.length(), 18)) + "..."));
-		}, 0));
-
-		return builder.bindPlayerInventory(player.inventory, GuiTextures.SLOT, 7, 80);
+							@Override
+							public boolean canTakeStack(EntityPlayer playerIn) {
+								return !isLocked() && super.canTakeStack(playerIn);
+							}
+						}.slotGroup("fuel_input")))
+				.child(new ItemSlot()
+						.pos(118, 18)
+						.background(GTGuiTextures.MAINTENANCE_ICON)
+						.slot(new ModularSlot(this.partialFuelDisplay, 0)
+								.canPut(false)
+								.canTake(false)))
+				.child(new ButtonWidget<>()
+						.pos(140, 18)
+						.addTooltipLine(IKey.lang("supercritical.gui.void_fuel"))
+						.overlay(GTGuiTextures.OVERLAY_VOID_NONE)
+						.background(GTGuiTextures.BUTTON)
+						.syncHandler("void_partial_fuel"))
+				.child(new RichTextWidget()
+						.pos(10, -30)
+						.size(158)
+						.autoUpdate(true)
+						.textBuilder(richText -> richText.addLine(IKey.lang("supercritical.gui.fission.depletion",
+								String.format("%.2f", depletionRatio.getDoubleValue() * 100)))))
+				.child(new RichTextWidget()
+						.pos(10, -13)
+						.size(158)
+						.autoUpdate(true)
+						.textBuilder(richText -> richText.addLine(IKey.lang("supercritical.gui.fission.depleted_rod",
+								depletedRod.getStringValue()))))
+				.bindPlayerInventory();
 	}
 
 	public double getCurrentDepletionRatio() {
@@ -149,11 +185,6 @@ public class MetaTileEntityFuelRodImportBus extends MetaTileEntityMultiblockNoti
 		if (!getWorld().isRemote && getOffsetTimer() % 5 == 0) {
 			pullItemsFromNearbyHandlers(getFrontFacing());
 		}
-	}
-
-	@Override
-	protected ModularUI createUI(EntityPlayer entityPlayer) {
-		return createUITemplate(entityPlayer).build(getHolder(), entityPlayer);
 	}
 
 	@Override
