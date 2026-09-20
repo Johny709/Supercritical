@@ -3,18 +3,23 @@ package supercritical.common.metatileentities.multi.multiblockpart;
 import codechicken.lib.render.CCRenderState;
 import codechicken.lib.render.pipeline.IVertexOperation;
 import codechicken.lib.vec.Matrix4;
+import com.cleanroommc.modularui.api.drawable.IKey;
+import com.cleanroommc.modularui.screen.ModularPanel;
+import com.cleanroommc.modularui.screen.UISettings;
+import com.cleanroommc.modularui.value.sync.PanelSyncManager;
+import com.cleanroommc.modularui.widgets.slot.ItemSlot;
+import com.cleanroommc.modularui.widgets.slot.ModularSlot;
 import gregtech.api.capability.IControllable;
-import gregtech.api.gui.GuiTextures;
-import gregtech.api.gui.ModularUI;
-import gregtech.api.gui.widgets.SlotWidget;
 import gregtech.api.metatileentity.MetaTileEntity;
 import gregtech.api.metatileentity.interfaces.IGregTechTileEntity;
 import gregtech.api.metatileentity.multiblock.AbilityInstances;
 import gregtech.api.metatileentity.multiblock.IMultiblockAbilityPart;
 import gregtech.api.metatileentity.multiblock.MultiblockAbility;
+import gregtech.api.mui.GTGuiTextures;
+import gregtech.api.mui.IMetaTileEntityGuiHolder;
+import gregtech.api.mui.MetaTileEntityGuiData;
 import gregtech.client.renderer.texture.Textures;
 import gregtech.common.metatileentities.multi.multiblockpart.MetaTileEntityMultiblockNotifiablePart;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.items.IItemHandlerModifiable;
 import net.minecraftforge.items.ItemStackHandler;
@@ -26,7 +31,8 @@ public class MetaTileEntityFuelRodExportBus extends MetaTileEntityMultiblockNoti
 		implements
 			IMultiblockAbilityPart<IItemHandlerModifiable>,
 			IControllable,
-			IFissionReactorHatch {
+			IFissionReactorHatch,
+			IMetaTileEntityGuiHolder {
 
 	private boolean workingEnabled;
 
@@ -67,17 +73,17 @@ public class MetaTileEntityFuelRodExportBus extends MetaTileEntityMultiblockNoti
 		return new ItemStackHandler(1);
 	}
 
-	private ModularUI.Builder createUITemplate(EntityPlayer player) {
-		ModularUI.Builder builder = ModularUI.builder(GuiTextures.BACKGROUND, 176, 143).label(10, 5, getMetaFullName());
-
-		builder.widget(new SlotWidget(exportItems, 0, 79, 18, true, false).setBackgroundTexture(GuiTextures.SLOT));
-
-		return builder.bindPlayerInventory(player.inventory, GuiTextures.SLOT, 7, 60);
-	}
-
 	@Override
-	protected ModularUI createUI(EntityPlayer entityPlayer) {
-		return createUITemplate(entityPlayer).build(getHolder(), entityPlayer);
+	public @NotNull ModularPanel buildUI(MetaTileEntityGuiData metaTileEntityGuiData, PanelSyncManager panelSyncManager, UISettings uiSettings) {
+		return ModularPanel.defaultPanel("fuel_rod_export")
+				.child(IKey.lang(this.getMetaFullName()).asWidget()
+						.pos(10, 5))
+				.child(new ItemSlot()
+						.pos(79, 18)
+						.background(GTGuiTextures.SLOT)
+						.slot(new ModularSlot(this.exportItems, 0)
+								.canPut(false)))
+				.bindPlayerInventory();
 	}
 
 	@Override
