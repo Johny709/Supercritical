@@ -38,10 +38,10 @@ dependencies {
     //     transitive = false
     // }
 
-    compileOnly(rfg.deobf(project.files("libs/ae2-uel-v0.56.7-5-g26bb598-dev.jar")))
+    compileOnly(rfg.deobf("curse.maven:ae2-extended-life-570458:6302098"))
     compileOnly(rfg.deobf(project.files("libs/gcyl-1.12.2-0.1.0-beta-dev.jar")))
     compileOnly(rfg.deobf(project.files("libs/gregtech-1.12.2-2.9.0-beta-dev.jar")))
-    compileOnly(rfg.deobf(project.files("libs/CodeChickenLib-1.12.2-3.2.3.358-universal.jar")))
+    compileOnly("curse.maven:codechickenlib-242818:2779849")
     compileOnly("curse.maven:had-enough-items-557549:5906628")
     compileOnly("curse.maven:theoneprobe-245211:2667280")
     compileOnly("org.jetbrains:annotations:26.1.0")
