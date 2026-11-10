@@ -13,7 +13,7 @@ import supercritical.common.item.SCMetaItems;
 import supercritical.common.metatileentities.SCMetaTileEntities;
 import supercritical.supercritical.Tags;
 
-@Mod(modid = Tags.MOD_ID, version = Tags.VERSION, name = Tags.MOD_NAME, dependencies = "required-after:gregtech@[2.8.10-beta,);"
+@Mod(modid = Tags.MOD_ID, version = Tags.VERSION, name = Tags.MOD_NAME, dependencies = "required-after:gregtech@[2.9.0,);"
 		+ "required-after:mixinbooter@[9.0,);", acceptedMinecraftVersions = "[1.12.2]")
 public class Supercritical {
 
