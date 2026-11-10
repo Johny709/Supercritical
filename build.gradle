@@ -109,6 +109,8 @@ repositories {
     }
 }
 
+apply from: 'repositories.gradle'
+
 dependencies {
     if (propertyBool('use_modern_java_syntax')) {
         annotationProcessor 'com.github.bsideup.jabel:jabel-javac-plugin:1.0.0'
