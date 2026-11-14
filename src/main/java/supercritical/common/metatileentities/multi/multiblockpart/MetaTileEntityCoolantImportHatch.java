@@ -101,13 +101,10 @@ public class MetaTileEntityCoolantImportHatch extends MetaTileEntityMultiblockNo
 
 		return ModularPanel.defaultPanel("coolant_import_hatch")
 				.child(IKey.lang(this.getMetaFullName()).asWidget()
-						.pos(6, 5))
+						.pos(7, 5))
 				.child(GTGuiTextures.DISPLAY.asWidget()
 						.pos(7, 16)
 						.size(131, 55))
-				.child(new FluidSlot()
-						.pos(119, 52)
-						.tank(this.fluidTank))
 				.child(new RichTextWidget()
 						.pos(11, -29)
 						.size(127)
@@ -117,6 +114,9 @@ public class MetaTileEntityCoolantImportHatch extends MetaTileEntityMultiblockNo
 							richText.addLine(KeyUtil.string(TextFormatting.WHITE, String.valueOf(fluidAmount.getStringValue())));
 							richText.addLine(KeyUtil.string(TextFormatting.WHITE, fluidName.getStringValue()));
 						}))
+				.child(new FluidSlot()
+						.pos(119, 52)
+						.tank(this.fluidTank))
 				.child(new ItemSlot()
 						.pos(140, 16)
 						.background(GTGuiTextures.SLOT, GTGuiTextures.IN_SLOT_OVERLAY)

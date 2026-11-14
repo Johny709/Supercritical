@@ -111,7 +111,7 @@ public class MetaTileEntityFuelRodImportBus extends MetaTileEntityMultiblockNoti
 				.child(IKey.lang(this.getMetaFullName()).asWidget()
 						.pos(7, 5))
 				.child(new RichTextWidget()
-						.pos(10, -20)
+						.pos(7, -20)
 						.size(158)
 						.autoUpdate(true)
 						.setEnabledIf(richTextWidget -> locked.getBoolValue())

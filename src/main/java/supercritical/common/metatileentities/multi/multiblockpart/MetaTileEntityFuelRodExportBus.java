@@ -77,7 +77,7 @@ public class MetaTileEntityFuelRodExportBus extends MetaTileEntityMultiblockNoti
 	public @NotNull ModularPanel buildUI(MetaTileEntityGuiData metaTileEntityGuiData, PanelSyncManager panelSyncManager, UISettings uiSettings) {
 		return ModularPanel.defaultPanel("fuel_rod_export")
 				.child(IKey.lang(this.getMetaFullName()).asWidget()
-						.pos(10, 5))
+						.pos(7, 5))
 				.child(new ItemSlot()
 						.pos(79, 18)
 						.background(GTGuiTextures.SLOT)
