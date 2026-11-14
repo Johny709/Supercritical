@@ -99,29 +99,34 @@ public class MetaTileEntityFuelRodImportBus extends MetaTileEntityMultiblockNoti
 	public @NotNull ModularPanel buildUI(MetaTileEntityGuiData metaTileEntityGuiData, PanelSyncManager syncManager, UISettings uiSettings) {
 		DoubleSyncValue depletionRatio = new DoubleSyncValue(this::getCurrentDepletionRatio);
 		StringSyncValue depletedRod = new StringSyncValue(this.getDepletedFuel()::getDisplayName);
+		BooleanSyncValue locked = new BooleanSyncValue(this::isLocked);
 		syncManager.syncValue("depletion_ratio", depletionRatio);
 		syncManager.syncValue("depleted_rod", depletedRod);
+		syncManager.syncValue("locked", locked);
 		syncManager.syncValue("void_partial_fuel", new InteractionSyncHandler()
 				.setOnMousePressed(mouseData -> this.voidPartialFuel()));
 		syncManager.registerSlotGroup(new SlotGroup("fuel_input", 1, 1, true));
 
 		return ModularPanel.defaultPanel("fuel_rod_import")
 				.child(IKey.lang(this.getMetaFullName()).asWidget()
-						.pos(10, 5))
+						.pos(7, 5))
+				.child(new RichTextWidget()
+						.pos(10, -20)
+						.size(158)
+						.autoUpdate(true)
+						.setEnabledIf(richTextWidget -> locked.getBoolValue())
+						.textBuilder(richText -> richText.addLine(IKey.lang("supercritical.gui.fission.depletion",
+										String.format("%.2f", depletionRatio.getDoubleValue() * 100)))
+								.addLine(IKey.lang("supercritical.gui.fission.depleted_rod", depletedRod.getStringValue()))))
 				.child(new ItemSlot()
 						.pos(40, 18)
-						.background(GTGuiTextures.SLOT)
 						.slot(new ModularSlot(this.importItems, 0) {
 							@Override
-							public boolean isItemValid(@NotNull ItemStack stack) {
-								return !isLocked() && super.isItemValid(stack);
-							}
-
-							@Override
 							public boolean canTakeStack(EntityPlayer playerIn) {
-								return !isLocked() && super.canTakeStack(playerIn);
+								return !locked.getBoolValue() && super.canTakeStack(playerIn);
 							}
-						}.slotGroup("fuel_input")))
+						}.filter(itemStack -> !locked.getBoolValue())
+						.slotGroup("fuel_input")))
 				.child(new ItemSlot()
 						.pos(118, 18)
 						.background(GTGuiTextures.MAINTENANCE_ICON)
@@ -134,18 +139,6 @@ public class MetaTileEntityFuelRodImportBus extends MetaTileEntityMultiblockNoti
 						.overlay(GTGuiTextures.OVERLAY_VOID_NONE)
 						.background(GTGuiTextures.BUTTON)
 						.syncHandler("void_partial_fuel"))
-				.child(new RichTextWidget()
-						.pos(10, -30)
-						.size(158)
-						.autoUpdate(true)
-						.textBuilder(richText -> richText.addLine(IKey.lang("supercritical.gui.fission.depletion",
-								String.format("%.2f", depletionRatio.getDoubleValue() * 100)))))
-				.child(new RichTextWidget()
-						.pos(10, -13)
-						.size(158)
-						.autoUpdate(true)
-						.textBuilder(richText -> richText.addLine(IKey.lang("supercritical.gui.fission.depleted_rod",
-								depletedRod.getStringValue()))))
 				.bindPlayerInventory();
 	}
 
